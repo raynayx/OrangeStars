@@ -1,0 +1,10 @@
+build/
+CMakeFiles/
+CMakeCache.txt
+elf2uf2/
+generated/
+pico-sdk/
+v/
+firmware.*
+Makefile
+*.drawio.bkp
