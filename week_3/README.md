@@ -113,7 +113,7 @@ To setup the project, I created a shell script called `setup.sh` to setup the di
 To use the Invoke tool, `virtualenv` is called to create a virutal environment for Invoke to run.
 The list of invoke commands(tasks) I have created is as follows:
 
-![Invoke command list](./invokeCommandList.png)
+![Invoke command list](docs/invokeCommandList.png)
  
 
 ## Hardware Registers
@@ -124,7 +124,7 @@ Each GPIO has a status register and a control register
 - `GPIO_IN` (which is mapped to `0xd0000000 | 0x004`)reports the value seen on all GPIO pins, masking can then be used to single out a specific bit from (0 - 29)
 - Bit 16 is the bit of interest since that's the pin the button is connected to.
 - I was able to see this register change value on button press.
-![egister value change](./btnGPIO16.png)
+![egister value change](docs/btnGPIO16.png)
 
 ## Debugging
 - Stepping through code: JLinkGDBServer runs and listens on port 2331 on localhost
