@@ -8,3 +8,9 @@ v/
 firmware.*
 Makefile
 *.drawio.bkp
+# Eclipse
+.metadata
+.settings
+[Rr]elease
+[Dd]ebug
+.launch
