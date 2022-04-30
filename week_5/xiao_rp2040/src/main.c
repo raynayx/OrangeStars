@@ -16,16 +16,16 @@ int main()
 	
 	sleep_ms(10000);
 
-	// ConsoleInit();
+	ConsoleInit();
 
 	char c;
 
 	while(1)
 	{
-		// ConsoleProcess();
+		ConsoleProcess();
 
-		c = getchar();
-		uart_putc(uart0,c);
+		// c = getchar();
+		// uart_putc(uart0,c);
 	}
 	return 0;
 }
