@@ -30,7 +30,7 @@ add_executable(firmware
 
 #Enable USB and disable UART
 pico_enable_stdio_usb(firmware 1)
-pico_enable_stdio_uart(firmware 1)
+pico_enable_stdio_uart(firmware 0)
 
 # Add pico_stdlib library which aggregates commonly used features
 target_link_libraries(firmware pico_stdlib hardware_gpio)
