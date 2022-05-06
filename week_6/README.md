@@ -14,37 +14,79 @@ The system has edge devices that gather ambient data and a gateway that collates
 
 
 # Hardware description
-- Edge node:
-	- Sensor:
-		- Temperature and Humidity sensor
-	- Button
-	- LoRa transciever
-	- Power supply
-- Gateway:
-	- LoRa transciver
-	- SBC
+The hardware setup of the system consists of two main parts:
+1. The Edge node and
+2. The Gateway
+
+
+### Edge node:
+The Edge node is the part of the system that collects the data in the forest. It is made of:
+- Microcontroller
+- Sensor:
+	- Temperature and Humidity sensor
+- Button
+- LoRa transciever
+- Power supply
+
+### Gateway:
+The Gateway is a central station to which the edge nodes send the data gathered. It is made of:
+- LoRa transciever
+- SBC
 
 ## Hardware Parts Requirements
-- Edge node
-	- Sensor
-	- LoRa transciever
-	- Power Supply
+### Edge node
 
-- Gateway:
-	- LoRa transciever
-	- SBC
+#### Microcontroller
+- Available
+- Cortex M series based
+- Low power 
+#### Sensor
+- Cheap
+- Wide temperature range
+- 
+
+#### LoRa transciever
+- Frequency
+- Availability
+- Low cost
+- Low power
+
+#### Power Supply
+- 
+### Gateway:
+#### LoRa transciever
+- 
+#### SBC
+- Low cost
+- Fairly powerful
+- Available
 
 ## Hardware Selection
 - Edge node:
-	- Sensor: AHT21 temperature and humidity sensor
-	- LoRa transciver: RAK4200 breakout board with antenna
+	- Microcontroller: 
+		- RP2040( Arm Cortex-M0+)
+			- 264KB internal RAM
+			- 2MB external flash
+		
+	- Sensor: 
+		- AHT21 temperature and humidity sensor
+	- LoRa transciver: 
+		- RAK4200 breakout board with antenna
 	- Power supply:
 
 
 # Software description
 - Describe code in general
-- Describe parts you wrote in some detail(3-5 sentences per module)
-- Describe code you re-used from other sources, including licenses for those
+
+<!-- - Describe parts you wrote in some detail(3-5 sentences per module) -->
+I wrote the code to gather the sensor data, store it and transmit at intervals. I also wrote code to put the device to sleep and wake at predetermined intervals.
+I implemented a state machine to cycle through various states in the life of the edge device.
+
+
+<!-- - Describe code you re-used from other sources, including licenses for those -->
+I used a library from the vendor of the LoRa module (RAK Wireless).
+I also used the Raspberry Pi Pico SDK as a HAL.
+
 
 # Diagram of the system architecture
 ## System Block diagram
@@ -63,6 +105,10 @@ The system has edge devices that gather ambient data and a gateway that collates
 
 # Project To-Dos
 - [ ] Edge node code
+	- [] Sensor data gathering code
+	- [] Data transmission code
+	- [] Data storage code
+	- [] Implement state machine
 - [ ] Hardware assembly for edgee node
 - [ ] Gateway assembly
 
