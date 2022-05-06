@@ -78,14 +78,17 @@ The Gateway is a central station to which the edge nodes send the data gathered.
 # Software description
 - Describe code in general
 
+
 <!-- - Describe parts you wrote in some detail(3-5 sentences per module) -->
+I wrote the AHT21 driver guided by vendor code
 I wrote the code to gather the sensor data, store it and transmit at intervals. I also wrote code to put the device to sleep and wake at predetermined intervals.
 I implemented a state machine to cycle through various states in the life of the edge device.
 
 
 <!-- - Describe code you re-used from other sources, including licenses for those -->
 I used a library from the vendor of the LoRa module (RAK Wireless).
-I also used the Raspberry Pi Pico SDK as a HAL.
+I 
+I also used the Raspberry Pi Pico SDK.
 
 
 # Diagram of the system architecture
@@ -105,12 +108,18 @@ I also used the Raspberry Pi Pico SDK as a HAL.
 
 # Project To-Dos
 - [ ] Edge node code
-	- [] Sensor data gathering code
-	- [] Data transmission code
-	- [] Data storage code
-	- [] Implement state machine
-- [ ] Hardware assembly for edgee node
-- [ ] Gateway assembly
+	- [ ] Sensor data gathering code
+	- [ ] Data transmission code
+	- [ ] Data storage code
+	- [ ] Implement state machine
+- [ ] Hardware assembly for edge node
+	- [ ] Connect sensor to MCU
+	- [ ] Connect LoRa module to MCU
+	- [ ] 
+- [ ] Hardware assembly for Gateway
+	- [ ] Connect LoRa module to Raspberry Pi
+	- [ ] Retrieve data and store in a text file
+- [ ] Gateway code	
 
 # Build instructions
 - How to build the system(including toolchain)
