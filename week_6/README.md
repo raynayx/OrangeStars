@@ -142,7 +142,7 @@ In order to test the LoRa module, I used RAK's Serial program to receive command
 
 # Project To-Dos
 - [ ] Setup environment
-	- [ ] Push sample setup project and add link
+	- [x] Push sample setup project and add link
 	- [ ] Setup simple unit tests
 - [ ] Edge node code
 	- [ ] Sensor data gathering code
