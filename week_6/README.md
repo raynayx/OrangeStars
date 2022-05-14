@@ -160,6 +160,6 @@ In order to test the LoRa module, I used RAK's Serial program to receive command
 
 
 # References
-[RAK vendor code repo](https://github.com/RAKWireless/Products_practice_based_on_RUI_v2.0)
-[Weather impact on forest fires](https://wxguys.ssec.wisc.edu/2016/05/09/wx-forest-fires/#:~:text=Weather%20and%20climate%20are%20important,start%20and%20spread%20a%20fire.)
-[Wildfires and Climate change](https://www.c2es.org/content/wildfires-and-climate-change/)
+- [RAK vendor code repo](https://github.com/RAKWireless/Products_practice_based_on_RUI_v2.0)
+- [Weather impact on forest fires](https://wxguys.ssec.wisc.edu/2016/05/09/wx-forest-fires/#:~:text=Weather%20and%20climate%20are%20important,start%20and%20spread%20a%20fire.)
+- [Wildfires and Climate change](https://www.c2es.org/content/wildfires-and-climate-change/)
