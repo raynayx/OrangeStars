@@ -1,6 +1,6 @@
 ## R.2
 ```c
-#define MINN(a,b) ((a)<(b) ? (a) : (b))
+#define MIN(a,b) ((a)<(b) ? (a) : (b))
 ```
 
 ## R.6
