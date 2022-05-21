@@ -10,11 +10,12 @@ According to the RP2040 datasheet,
 ![Console Image](./consoleShot.png)
 
 As seen in the image,
-- The initialized gobal variable is placed in SRAM, in the data
+- The initialized gobal variable is placed in SRAM, in the .data section
 
 - The uninitialized global goes into SRAM in the .bss section
 
-- The static variable in the function goes to a location just before .bss
+- The static zero initialized variable in the function goes to .bss 
+- The static non-zero initialized variable in the function goes to .data section
 
 
 - The .data section starts at the lowest SRAM address

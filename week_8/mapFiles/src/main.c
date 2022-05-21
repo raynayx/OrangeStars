@@ -38,9 +38,11 @@ int gUnit;
 void staticVar()
 {
 	static int staticVarInFun = 0;
+	static int staticVarInFunNonZero = 1;
 	++staticVarInFun;
 
 	printf("Static variable in function:\t0x%p\n",&staticVarInFun);
+	printf("Static variable in function(non-zero init):\t%p\n",&staticVarInFunNonZero);
 	
 	__asm__ volatile ("mov %0, r13\n\t" : "=r"(StackPointer));		// NL and TAB used to separate instructions
 	printf("Stack pointer:\t0x%X\n",StackPointer);
