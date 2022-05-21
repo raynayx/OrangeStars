@@ -30,14 +30,18 @@ As seen in the image,
 - The Stack pointer holds the address of the top of the stack. This address changes depending on the contents on the stack.
 In the screenshot, 3 different address for the stack pointer are shown since I checked in `main` and two other functions.
 
+## Modified Linker Script memory layout
+![Console image swap](consoleShot_swap.png)
+This image shows the swapped start addresses of the `.bss` and `.data` sections.
+
 # Linker script
 The default linker script is located at `$PICO_SDK_HOME/src/rp2_common/pico_standard_link/memmap_default.ld`. 
 - The file is commited with the same name.
 - The modified linker script is commited as `memmap_mod.ld`
-<!-- In CMakeLists.txt, `` the directive for a linker script other than the default is given. -->
+In CMakeLists.txt, `pico_set_linker_script(${MY_TARGET} ${LINKER_SCRIPT})` the directive for a linker script other than the default is given.
 
 
 # Map file
 The sections and variables shown in the image match the map file's report.
 - The map file produced with the default linker script has been commited as `firmware.elf.map`.
-<!-- - The map file produced with the modified linker script has been commited as `firmware_mod.elf.map`. -->
+- The map file produced with the modified linker script has been commited as `firmware_mod.elf.map`.
