@@ -32,8 +32,8 @@ In the screenshot, 3 different address for the stack pointer are shown since I c
 
 ## Modified Linker Script memory layout
 ![Console image swap](consoleShot_swap.png)
-This image shows the swapped start addresses of the `.bss` and `.data` sections.
-
+- This image shows the swapped start addresses of the `.bss` and `.data` sections.
+- The corresponding addresses for initialized and uninitialized variables also reflect the change in memory location.
 # Linker script
 The default linker script is located at `$PICO_SDK_HOME/src/rp2_common/pico_standard_link/memmap_default.ld`. 
 - The file is commited with the same name.
