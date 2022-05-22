@@ -5,44 +5,57 @@
 #ifndef _AHT21_H_
 #define _AHT21_H_
 
-
-/****define environment as stm32 or rp2040*****/
-// #define _MY_STM32_DISCO_
-
-#ifdef _MY_STM32_DISCO_
-	#include "stm32l4xx_hal.h"
-#else
-//get rp2040 i2c library
-	#include "hardware/i2c.h"
-#endif
+#include "hardware/i2c.h"
 
 /************************/
 
 
 
 /*******ADDRESS**************/
-#define AHT21_I2C_ADDR (0x38 << 1)
+#define AHT21_I2C_ADDR (0x38)
 
-#define AHT21_INIT_REG_1 0x1B
-#define AHT21_INIT_REG_2 0x1C
-#define AHT21_INIT_REG_3 0x1E
+/*Commnnad registers*/
+#define AHT21_REG_MEASURE 0xAC
+#define AHT21_REG_INIT 0xBE
+#define AHT21_REG_STATUS 0x71
+#define AHT21_REG_SOFTRESET 0xBA
+
+/*Register controls*/
+/*Init register control*/
+#define AHT21_INIT_CTRL_NORMAL_MODE       0x00  //normal mode on/off       bit[6:5], for AHT1x only
+#define AHT21_INIT_CTRL_CYCLE_MODE        0x20  //cycle mode on/off        bit[6:5], for AHT1x only
+#define AHT21_INIT_CTRL_CMD_MODE          0x40  //command mode  on/off     bit[6:5], for AHT1x only
+#define AHT21_INIT_CTRL_CAL_ON            0x08  //calibration coeff on/off bit[3]
+#define AHT21_INIT_CTRL_NOP               0x00  //NOP control, send after any "AHT1X_INIT_CTRL..."
+
+/* status byte register controls */
+#define AHT21_STATUS_CTRL_BUSY            0x80  //busy                      bit[7]
+#define AHT21_STATUS_CTRL_NORMAL_MODE     0x00  //normal mode status        bit[6:5], for AHT1x only
+#define AHT21_STATUS_CTRL_CYCLE_MODE      0x20  //cycle mode status         bit[6:5], for AHT1x only
+#define AHT21_STATUS_CTRL_CMD_MODE        0x40  //command mode status       bit[6:5], for AHT1x only
+#define AHT21_STATUS_CTRL_CRC             0x10  //CRC8 status               bit[4], no info in datasheet
+#define AHT21_STATUS_CTRL_CAL_ON          0x08  //calibration coeff status  bit[3]
+#define AHT21_STATUS_CTRL_FIFO_ON         0x04  //FIFO on status            bit[2], no info in datasheet
+#define AHT21_STATUS_CTRL_FIFO_FULL       0x02  //FIFO full status          bit[1], no info in datasheet
+#define AHT21_STATUS_CTRL_FIFO_EMPTY      0x02  //FIFO empty status         bit[1], no info in datasheet
+
+/* measurement register controls */
+#define AHT21_START_MEASURE_CTRL      0x33  //measurement controls, suspect this is temperature & humidity DAC resolution
+#define AHT21_START_MEASURE_CTRL_NOP  0x00  //NOP control, send after any "AHTXX_START_MEASUREMENT_CTRL..."
 
 
-//#define AHT21_CMD_CALIBRATE 0xE1
+/* sensor delays */
+#define AHT21_CMD_DELAY          10      //delay between commands, in milliseconds
+#define AHT21_MEASUREMENT_DELAY  80      //wait for measurement to complete, in milliseconds
+#define AHT21_POWER_ON_DELAY     100     //wait for AHT2x to initialize after power-on, in milliseconds
+#define AHT21_SOFT_RESET_DELAY   20      //less than 20 milliseconds
 
-#define AHT21_CMD_MEASURE 0xAC
-#define AHT21_CMD_SOFTRESET 0xBA
-#define AHT21_CMD_GET_STATUS 0x71
+/* misc */
+#define AHT21_I2C_SPEED_100KHZ   100000  //sensor I2C speed 100KHz..400KHz, in Hz
+#define AHT21_I2C_STRETCH_USEC   1000    //I2C stretch time, in usec
+#define AHT21_FORCE_READ_DATA    true    //force to read data via I2C
+#define AHT21_USE_READ_DATA      false   //force to use data from previous read
 
-
-#define AHT21_CMD_INIT 0xBE
-
-
-#define AHT21_STATUS_INIT_RDY 0x18
-#define AHT21_STATUS_BUSY 0x80
-#define AHT21_STATUS_CALIBRATED 0x08
-
-#define AHT21_TIME_MEASURE_WAIT 250
 
 #define AHT21_DENOM 1048576 // 2^20
 
@@ -58,45 +71,30 @@ typedef struct AHT21
 	float humidity;					//Sensor current calculated humidity
 	uint8_t raw_response[6];		//Sensor raw data reading
 	uint8_t crc;					//CRC check for raw data sent
-#ifdef _MY_STM32_DISCO_
-	I2C_HandleTypeDef *hal_i2c; 	//stm32_hal
-#else
 	i2c_inst_t *hal_i2c;				// rp2040
-#endif
 }AHT21;
 
 
-typedef enum AHT21_STATUS
+typedef enum eAHT21_STATUS
 {
-	AHT21_OKAY,
-	AHT21_READY,
-	AHT21_BUSY,
-	AHT21_CALIBERATED,
-	AHT21_UNCALIBERATED,
-	AHT21_INIT_FAILED
-}AHT21_STATUS;
+	eAHT21_OKAY = 0x00,
+	eAHT21_BUSY,
+	eAHT21_ACK_ERROR,
+	eAHT21_DATA_ERROR,
+	eAHT21_CRC8_ERROR,
+	eAHT21_ERROR = 0xFF
+}eAHT21_STATUS;
 
 
 //initialise sensor with address
 
-#ifdef _MY_STM32_DISCO_
-	AHT21_STATUS AHT21_init(AHT21 *sensor, uint16_t addr,I2C_HandleTypeDef *hal_i2c);
-#else
-	AHT21_STATUS AHT21_init(AHT21 *sensor, uint16_t addr,i2c_inst_t *i2c);
-#endif
 
+eAHT21_STATUS AHT21_init(AHT21 *sensor, uint16_t addr,i2c_inst_t *i2c);
 
-//read response from sensor
-AHT21_STATUS AHT21_read(AHT21 *sensor);
-
-//read response from sensor with CRC
-//AHT21_STATUS AHT21_read_crc(AHT21 *sensor);
-
-
-//write data to sensor
-//AHT21_STATUS AHT21_write(AHT21 *sensor,uint8_t cmd);
-
-
+float AHT21_read_temperature(AHT21* s,bool readAHT);
+float AHT21_read_humidity(AHT21 *s,bool readAHT);
+eAHT21_STATUS AHT21_softreset(AHT21 *s);
+bool set_normal_mode(AHT21 *s);
 
 
 
