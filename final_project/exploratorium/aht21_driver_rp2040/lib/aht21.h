@@ -47,7 +47,7 @@
 /* sensor delays */
 #define AHT21_CMD_DELAY          10      //delay between commands, in milliseconds
 #define AHT21_MEASUREMENT_DELAY  80      //wait for measurement to complete, in milliseconds
-#define AHT21_POWER_ON_DELAY     100     //wait for AHT2x to initialize after power-on, in milliseconds
+#define AHT21_POWER_ON_DELAY     250     //wait for AHT2x to initialize after power-on, in milliseconds
 #define AHT21_SOFT_RESET_DELAY   20      //less than 20 milliseconds
 
 /* misc */
@@ -87,14 +87,13 @@ typedef enum eAHT21_STATUS
 
 
 //initialise sensor with address
-
-
 eAHT21_STATUS AHT21_init(AHT21 *sensor, uint16_t addr,i2c_inst_t *i2c);
 
 float AHT21_read_temperature(AHT21* s,bool readAHT);
 float AHT21_read_humidity(AHT21 *s,bool readAHT);
 eAHT21_STATUS AHT21_softreset(AHT21 *s);
 bool set_normal_mode(AHT21 *s);
+uint8_t _read_status_reg(AHT21 *s);
 
 
 

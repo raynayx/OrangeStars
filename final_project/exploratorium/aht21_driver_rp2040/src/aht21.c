@@ -4,11 +4,8 @@
 //#include <math.h>
 
 static uint8_t _get_busy(AHT21 *s, bool readAHT);
-static uint8_t _read_status_reg(AHT21 *s);
-
 static uint8_t _get_calibration(AHT21 *s);
 static bool _set_init_reg(AHT21 *s,uint8_t val);
-static uint8_t _read_status_reg(AHT21 *s);
 static bool _checkCRC8(AHT21* s);
 static void _read_measurement(AHT21* s);
 
@@ -24,6 +21,7 @@ eAHT21_STATUS AHT21_init(AHT21 *s, uint16_t addr,i2c_inst_t *i2c)
 
 eAHT21_STATUS AHT21_softreset(AHT21 *s)
 {
+	_read_status_reg(s);
 
 	int res = i2c_write_blocking(s->hal_i2c,s->addr,(uint8_t*)AHT21_REG_SOFTRESET,1,false);
 	
@@ -68,31 +66,31 @@ static bool _set_init_reg(AHT21 *s,uint8_t val)
 }
 
 
-static uint8_t _read_status_reg(AHT21 *s)
+uint8_t _read_status_reg(AHT21 *s)
 {
-	sleep_ms(AHT21_CMD_DELAY);
+	
 
 	uint8_t return_val;
 	uint8_t cmd = AHT21_REG_STATUS;
 
-	int res = i2c_write_blocking(s->hal_i2c,s->addr,&cmd,1,true);
+	i2c_write_blocking(s->hal_i2c,s->addr,AHT21_REG_STATUS,1,false);
+	sleep_ms(AHT21_CMD_DELAY);
+	// if(res == PICO_ERROR_GENERIC)
+	// {
+	// 	return eAHT21_ERROR;
+	// }
 
-	if(res == PICO_ERROR_GENERIC)
+	if(i2c_get_read_available(s->hal_i2c) == 0)
 	{
 		return eAHT21_ERROR;
 	}
 
-	if(i2c_get_read_available(s->hal_i2c))
-	{
-		return eAHT21_ERROR;
-	}
+	i2c_read_blocking(s->hal_i2c,s->addr,&return_val,1,false);
 
-	res = i2c_read_blocking(s->hal_i2c,s->addr,&return_val,1,false);
-
-	if(res == PICO_ERROR_GENERIC)
-	{
-		return eAHT21_ERROR;
-	}
+	// if(res == PICO_ERROR_GENERIC)
+	// {
+	// 	return eAHT21_ERROR;
+	// }
 	return return_val;
 }
 
@@ -152,11 +150,11 @@ void _read_measurement(AHT21* s)
 	i2c_write_blocking(s->hal_i2c,s->addr,(uint8_t*)AHT21_START_MEASURE_CTRL,1,true);
 	int res = i2c_write_blocking(s->hal_i2c,s->addr,(uint8_t*)AHT21_START_MEASURE_CTRL_NOP,1,false);
 	
-	if(res == PICO_ERROR_GENERIC)
-	{
-		s->status = eAHT21_ERROR;
-		return;
-	}
+	// if(res == PICO_ERROR_GENERIC)
+	// {
+	// 	s->status = eAHT21_ERROR;
+	// 	return;
+	// }
 	s->status = _get_busy(s,AHT21_FORCE_READ_DATA);
 	if(s->status == eAHT21_BUSY)
 	{
