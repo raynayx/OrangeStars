@@ -12,7 +12,7 @@
 
 
 /*******ADDRESS**************/
-#define AHT21_I2C_ADDR (0x38)
+#define AHT21_I2C_ADDR (0x39)
 
 /*Commnnad registers*/
 #define AHT21_REG_MEASURE 0xAC

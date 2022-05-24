@@ -21,14 +21,14 @@ eAHT21_STATUS AHT21_init(AHT21 *s, uint16_t addr,i2c_inst_t *i2c)
 
 eAHT21_STATUS AHT21_softreset(AHT21 *s)
 {
-	_read_status_reg(s);
+	// _read_status_reg(s);
 
-	int res = i2c_write_blocking(s->hal_i2c,s->addr,(uint8_t*)AHT21_REG_SOFTRESET,1,false);
-	
-	if(res == PICO_ERROR_GENERIC )
-	{
-		return eAHT21_ERROR;
-	}
+	i2c_write_blocking(s->hal_i2c,s->addr,(uint8_t*)AHT21_REG_SOFTRESET,1,false);
+
+	// if(res == PICO_ERROR_GENERIC )
+	// {
+	// 	return eAHT21_ERROR;
+	// }
 	sleep_ms(AHT21_SOFT_RESET_DELAY);
 
 	if((set_normal_mode(s) == true) && (_get_calibration(s) == AHT21_STATUS_CTRL_CAL_ON)); 
@@ -71,9 +71,8 @@ uint8_t _read_status_reg(AHT21 *s)
 	
 
 	uint8_t return_val;
-	uint8_t cmd = AHT21_REG_STATUS;
 
-	i2c_write_blocking(s->hal_i2c,s->addr,AHT21_REG_STATUS,1,false);
+	i2c_write_blocking(s->hal_i2c,s->addr,(uint8_t*)AHT21_REG_STATUS,1,false);
 	sleep_ms(AHT21_CMD_DELAY);
 	// if(res == PICO_ERROR_GENERIC)
 	// {
