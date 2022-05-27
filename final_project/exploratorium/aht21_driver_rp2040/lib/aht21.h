@@ -69,9 +69,9 @@ typedef struct AHT21
 	uint8_t status;					//Sensor current status
 	float temperature;				//Sensor current calculated temperature
 	float humidity;					//Sensor current calculated humidity
-	uint8_t raw_resp[6];		//Sensor raw data reading
+	uint8_t raw_resp[6];			//Sensor raw data reading
 	uint8_t crc;					//CRC check for raw data sent
-	i2c_inst_t *hal_i2c;				// rp2040
+	i2c_inst_t *hal_i2c;			// rp2040
 }AHT21;
 
 
