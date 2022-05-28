@@ -103,6 +103,7 @@ int main()
 ```
 
 ### Comments on the lookup table approach
-With this appraoch, there's a lookup table with 16 values stored. These values are precalculated bit counts in a nibble(2 bits).
+With this appraoch, there's a lookup table with 16 values stored. These values are precalculated bit counts in a nibble(4 bits).
 The countSetBit function is then called recursively while right shifting the number in question 4 times. The function returns when the argument becomes 0. In each invocation, the lookup table is supplied with 4 bits and it returns number of set bits. These are then added together arrive at the set bit count.
 This approach requires storing 16 bytes and then doing as many as 4 right shift operations and additons.
+
