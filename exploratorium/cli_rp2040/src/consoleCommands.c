@@ -12,6 +12,9 @@
 #include "consoleIo.h"
 #include "version.h"
 
+
+#include "hardware/gpio.h"
+
 #define IGNORE_UNUSED_VARIABLE(x)     if ( &x == &x ) {}
 
 static eCommandResult_T ConsoleCommandComment(const char buffer[]);
@@ -20,6 +23,11 @@ static eCommandResult_T ConsoleCommandHelp(const char buffer[]);
 static eCommandResult_T ConsoleCommandParamExampleInt16(const char buffer[]);
 static eCommandResult_T ConsoleCommandParamExampleHexUint16(const char buffer[]);
 
+//Project specific commands
+static eCommandResult_T ConsoleCommand_LED(const char* buffer);
+
+
+//Command table
 static const sConsoleCommandTable_T mConsoleCommandTable[] =
 {
     {";", &ConsoleCommandComment, HELP("Comment! You do need a space after the semicolon. ")},
@@ -27,7 +35,7 @@ static const sConsoleCommandTable_T mConsoleCommandTable[] =
     {"ver", &ConsoleCommandVer, HELP("Get the version string")},
     {"int", &ConsoleCommandParamExampleInt16, HELP("How to get a signed int16 from params list: int -321")},
     {"u16h", &ConsoleCommandParamExampleHexUint16, HELP("How to get a hex u16 from the params list: u16h aB12")},
-
+	{"led",&ConsoleCommand_LED,HELP("Turn on board LED on or off. Eg: led on")},
 	CONSOLE_COMMAND_TABLE_END // must be LAST
 };
 
@@ -97,6 +105,26 @@ static eCommandResult_T ConsoleCommandVer(const char buffer[])
 
 	ConsoleIoSendString(VERSION_STRING);
 	ConsoleIoSendString(STR_ENDLINE);
+	return result;
+}
+
+static eCommandResult_T ConsoleCommand_LED(const char* buffer)
+{
+	eCommandResult_T result = COMMAND_ERROR;
+	char param[CONSOLE_COMMAND_MAX_COMMAND_LENGTH];
+	result = ConsoleReceiveParamString(buffer,1,param);
+
+	if(result == COMMAND_SUCCESS)
+	{
+		if(strcmp("on",param) == 0)
+		{
+			gpio_put(25,true);
+		}
+		else if(strcmp("off",param) == 0)
+		{
+			gpio_put(25,false);
+		}
+	}
 	return result;
 }
 

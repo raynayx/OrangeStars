@@ -474,3 +474,31 @@ eCommandResult_T ConsoleSendLine(const char *buffer)
 	ConsoleIoSendString(STR_ENDLINE);
 	return COMMAND_SUCCESS;
 }
+
+
+// Identify and obtain a parameter of type char*.
+eCommandResult_T ConsoleReceiveParamString(const char * buffer, const uint8_t parameterNumber, char * parameterStr)
+{
+	uint32_t startIndex = 0;
+	uint32_t i;
+	eCommandResult_T result;
+	char charVal;
+
+	result = ConsoleParamFindN(buffer, parameterNumber, &startIndex);
+
+	i = 0;
+	charVal = buffer[startIndex + i];
+	while ( ( LF_CHAR != charVal ) && ( CR_CHAR != charVal )
+			&& ( PARAMETER_SEPARATER != charVal ) )
+	{
+		parameterStr[i] = charVal;					// copy the relevant part
+		i++;
+		charVal = buffer[startIndex + i];
+	}
+	
+	if ( COMMAND_SUCCESS == result )
+	{
+		parameterStr[i] = NULL_CHAR;
+	}
+	return result;
+}

@@ -21,7 +21,7 @@ def debug(c):
 @task
 def clean(c):
     """Clean all binaries build from project"""
-    c.run("rm -rf build/* generated elf2uf2 firmware* {}".format(EXE)) 
+    c.run("rm -rf CMakeCache.txt cmake_install.cmake build/* generated elf2uf2 firmware* {}".format(EXE)) 
     
 @task
 def test(c):
