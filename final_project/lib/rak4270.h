@@ -12,6 +12,8 @@
 #include "hardware/uart.h"
 #include "hardware/gpio.h"
 
+#define uart_num uart0
+
 
 #define DEV_VER "at+version\r\n"
 #define DEV_STATUS "at+get_config=device:status\r\n"

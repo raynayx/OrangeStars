@@ -5,15 +5,21 @@
 
 
 
+
 // project specific includes
 #include "aht21.h"
 #include "rak4270.h"
 #include "console.h"
+#include "ws2812.pio.h"
+#include "ws2812.h"
+
 #include "sm.h"
 
 //function prototypes
 static void i2c_setup(void);
+static void uart_setup(void);
 static void button_setup(void);
+static void ws2812_setup(void);
 static void isr(uint gpio,uint32_t events);
 
 
@@ -26,7 +32,24 @@ float aht21_hum = 0.0f;			//humidity reading
 char temp_hum[20];				//data payload
 bool debug_mode = false;
 
-uint8_t button = 22u;	//interrupt button
+
+#ifdef _BOARDS_SEEED_XIAO_RP2040_H
+
+	uint8_t button = 3u; //interrupt button
+	#define IS_RGBW true
+	#define NUM_PIXEL 1
+	#define WS2812_PIN 12u
+	#define WS2812_PWR 11u
+
+	#define XIAO_I2C_SDA_PIN 28u
+	#define XIAO_I2C_SCL_PIN 29u
+
+	// #define XIAO_UART_TX 6
+	// #define XIAO_UART_RX 7
+
+#else
+	uint8_t button = 22u; //interrupt button
+#endif	//seeed_xiao_rp2040
 
 int main()
 {
@@ -38,20 +61,27 @@ int main()
 	// setup i2c bus
 	i2c_setup();
 
+	//setup uart
+	uart_setup();
+
+	//setup ws2812
+	ws2812_setup();
+
+	//wait for serial connection 
+	sleep_ms(4000);
 	// //setup rak4270
 	while(!rak4270_init())
 	{
 		printf("RAK4270: Init failed\n");
-		sleep_ms(5000);
+		sleep_ms(2000);
 	}
 	//setup aht21
 	while(!AHT21_init(&s, i2c0))
 	{
 		printf("AHT21:Init failed\n");
-		sleep_ms(5000);
+		sleep_ms(2000);
 	}
 
-	sleep_ms(4000);
 	//setup console
 	ConsoleInit();
 	while(1)
@@ -63,12 +93,17 @@ int main()
 			sprintf(temp_hum,"%.1fC\t%.1f%%\n",aht21_temp,aht21_hum);
 			rak4270_send_cmd_payload(LORA_P2P_SEND,temp_hum);
 
-			sleep_ms(5000);
-		}
+			printf("%s\n",temp_hum);
 
+			sleep_ms(2000);
+		}
 
 		if(debug_mode)
 		{
+			#ifdef _BOARDS_SEEED_XIAO_RP2040_H
+				pattern_sparkle(NUM_PIXEL,0);
+				sleep_ms(60);
+			#endif
 			ConsoleProcess();
 		}
 	}
@@ -80,11 +115,32 @@ int main()
 static void i2c_setup(void)
 {
 	i2c_init(i2c0, 100 * 1000);
-	gpio_set_function(PICO_DEFAULT_I2C_SDA_PIN, GPIO_FUNC_I2C);
-	gpio_set_function(PICO_DEFAULT_I2C_SCL_PIN, GPIO_FUNC_I2C);
-	gpio_pull_up(PICO_DEFAULT_I2C_SDA_PIN);
-	gpio_pull_up(PICO_DEFAULT_I2C_SCL_PIN);
+	#ifdef _BOARDS_SEEED_XIAO_RP2040_H
+		gpio_set_function(XIAO_I2C_SDA_PIN, GPIO_FUNC_I2C);
+		gpio_set_function(XIAO_I2C_SCL_PIN, GPIO_FUNC_I2C);
+		gpio_pull_up(XIAO_I2C_SDA_PIN);
+		gpio_pull_up(XIAO_I2C_SCL_PIN);
+	#else
+		gpio_set_function(PICO_DEFAULT_I2C_SDA_PIN, GPIO_FUNC_I2C);
+		gpio_set_function(PICO_DEFAULT_I2C_SCL_PIN, GPIO_FUNC_I2C);
+		gpio_pull_up(PICO_DEFAULT_I2C_SDA_PIN);
+		gpio_pull_up(PICO_DEFAULT_I2C_SCL_PIN);
+	#endif
 }
+
+static void uart_setup(void)
+{	
+	#ifdef _BOARDS_SEEED_XIAO_RP2040_H
+		uart_init(uart_num,115200);  //init UART 0
+		gpio_set_function(0,GPIO_FUNC_UART); //set GPIO 0 to UART TX
+		gpio_set_function(1,GPIO_FUNC_UART); //set GPIO 1 to UART RX
+	#else
+		uart_init(uart_num,115200);  //init UART 0
+		gpio_set_function(0,GPIO_FUNC_UART); //set GPIO 0 to UART TX
+		gpio_set_function(1,GPIO_FUNC_UART); //set GPIO 1 to UART RX
+	#endif
+}
+
 
 static void button_setup(void)
 {
@@ -103,4 +159,19 @@ static void isr(uint gpio,uint32_t events)
 		debug_mode = !debug_mode;
 	}
 	
+}
+
+
+static void ws2812_setup(void)
+{
+	#ifdef _BOARDS_SEEED_XIAO_RP2040_H
+		gpio_init(WS2812_PWR);
+		gpio_set_dir(WS2812_PWR,true);
+		gpio_put(WS2812_PWR,true);		
+		PIO pio = pio0;
+		int sm = 0;
+		uint offset = pio_add_program(pio0,&ws2812_program);
+		ws2812_program_init(pio,sm,offset,WS2812_PIN,800000,IS_RGBW);
+	#endif
+
 }

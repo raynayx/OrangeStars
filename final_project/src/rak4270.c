@@ -1,6 +1,7 @@
 #include "rak4270.h"
 #include "string.h"
 
+
 //Convert a string to hex characters
 static void strToHex(char *inStr, char *hexStr)
 {
@@ -17,9 +18,6 @@ static void strToHex(char *inStr, char *hexStr)
 
 bool rak4270_init()
 {
-	uart_init(uart0,115200);  //init UART 0
-	gpio_set_function(0,GPIO_FUNC_UART); //set GPIO 0 to UART TX
-	gpio_set_function(1,GPIO_FUNC_UART); //set GPIO 1 to UART RX
 
 	char resp[7];	//response buffer
 	char exp_resp[]={'O','K',' ','\r','\n','\021','\000'};	//response sent on second try
@@ -35,8 +33,8 @@ bool rak4270_init()
 
 void rak4270_send_cmd(char* cmd_str)
 {
-	uart_puts(uart0,cmd_str);
-	// uart_write_blocking(uart0,cmd_str,sizeof(cmd_str));
+	uart_puts(uart_num,cmd_str);
+	// uart_write_blocking(uart_num,cmd_str,sizeof(cmd_str));
 }
 
 
@@ -48,16 +46,16 @@ void rak4270_send_cmd_payload(char* cmd_str,char* payload)
 	strToHex(payload,hexStr);
 	sprintf(cmd,"%s%s%s",cmd_str,hexStr,CR_LF);
 
-	uart_puts(uart0,cmd);
+	uart_puts(uart_num,cmd);
 }
 
 
 // TODO: setup DMA to get all response back
 void rak4270_get_resp(char * reply_str)
 {
-	while (uart_is_readable(uart0))
+	while (uart_is_readable(uart_num))
 	{
-		*reply_str = uart_getc(uart0);
+		*reply_str = uart_getc(uart_num);
 		reply_str++;
 	}
 	
