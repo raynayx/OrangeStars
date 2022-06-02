@@ -14,6 +14,9 @@
 
 
 #include "hardware/gpio.h"
+#include "hardware/i2c.h"
+#include "rak4270.h"
+#include "aht21.h"
 
 #define IGNORE_UNUSED_VARIABLE(x)     if ( &x == &x ) {}
 
@@ -25,7 +28,9 @@ static eCommandResult_T ConsoleCommandParamExampleHexUint16(const char buffer[])
 
 //Project specific commands
 static eCommandResult_T ConsoleCommand_LED(const char* buffer);
-
+static eCommandResult_T ConsoleCommand_RAK4270(const char*buffer);
+static eCommandResult_T ConsoleCommand_AHT21(const char*buffer);
+static eCommandResult_T ConsoleCommand_device(const char* buffer);
 
 //Command table
 static const sConsoleCommandTable_T mConsoleCommandTable[] =
@@ -36,6 +41,10 @@ static const sConsoleCommandTable_T mConsoleCommandTable[] =
     {"int", &ConsoleCommandParamExampleInt16, HELP("How to get a signed int16 from params list: int -321")},
     {"u16h", &ConsoleCommandParamExampleHexUint16, HELP("How to get a hex u16 from the params list: u16h aB12")},
 	{"led",&ConsoleCommand_LED,HELP("Turn on board LED on or off. Eg: led on")},
+	{"aht",&ConsoleCommand_AHT21,HELP("Get readings from AHT21. Eg: aht temp; aht hum")},
+	{"rak",&ConsoleCommand_RAK4270,HELP("Interract with lora xceiver. Eg. ")},
+	{"device",&ConsoleCommand_device,HELP("Get device info.")},
+
 	CONSOLE_COMMAND_TABLE_END // must be LAST
 };
 
@@ -128,7 +137,53 @@ static eCommandResult_T ConsoleCommand_LED(const char* buffer)
 	return result;
 }
 
+static eCommandResult_T ConsoleCommand_AHT21(const char* buffer)
+{
+	AHT21 s;
+	AHT21_init(&s,i2c0);
+	eCommandResult_T result = COMMAND_ERROR;
+	char param[CONSOLE_COMMAND_MAX_COMMAND_LENGTH];
+	result = ConsoleReceiveParamString(buffer,1,param);
+	float reading = 0.0f;
+	char payload[10];
 
+	if(result == COMMAND_SUCCESS)
+	{
+		if(strcmp("temp",param) == 0)
+		{
+			reading = AHT21_get_temperature(&s);
+			sprintf(payload,"%.1fC",reading);
+		}
+		else if(result == COMMAND_SUCCESS)
+		{
+			reading = AHT21_get_humidity(&s);
+			sprintf(payload,"%.1f%%",reading);
+		}
+	}
+	
+	ConsoleIoSendString(payload);
+	ConsoleIoSendString(STR_ENDLINE);
+
+	return COMMAND_SUCCESS;
+}
+
+static eCommandResult_T ConsoleCommand_device(const char* buffer)
+{
+	eCommandResult_T result = COMMAND_SUCCESS;
+
+	ConsoleIoSendString(DEVICE_NAME);
+	ConsoleIoSendString(STR_ENDLINE);
+
+	ConsoleIoSendString(DEVICE_NUM);
+	ConsoleIoSendString(STR_ENDLINE);
+
+	return COMMAND_SUCCESS;
+}
+
+static eCommandResult_T ConsoleCommand_RAK4270(const char* buffer)
+{
+	return COMMAND_SUCCESS;
+}
 const sConsoleCommandTable_T* ConsoleCommandsGetTable(void)
 {
 	return (mConsoleCommandTable);

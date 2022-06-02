@@ -35,14 +35,14 @@ bool debug_mode = false;
 
 #ifdef _BOARDS_SEEED_XIAO_RP2040_H
 
-	uint8_t button = 3u; //interrupt button
+	uint8_t button = 3u; //interrupt button found on D10
 	#define IS_RGBW true
 	#define NUM_PIXEL 1
 	#define WS2812_PIN 12u
 	#define WS2812_PWR 11u
 
-	#define XIAO_I2C_SDA_PIN 28u
-	#define XIAO_I2C_SCL_PIN 29u
+	#define XIAO_I2C_SDA_PIN 28u		//found on A2/D2
+	#define XIAO_I2C_SCL_PIN 29u		//found on A3/D3
 
 	// #define XIAO_UART_TX 6
 	// #define XIAO_UART_RX 7
