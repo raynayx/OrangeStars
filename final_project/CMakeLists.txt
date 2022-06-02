@@ -28,6 +28,7 @@ add_executable(${MY_TARGET}
    src/consoleCommands.c
    src/consoleIo.c
    src/ws2812.c
+   src/batteryLevel.c
 )
 
 #Enable printing over USB and disable printing over UART

@@ -17,6 +17,8 @@
 #include "hardware/i2c.h"
 #include "rak4270.h"
 #include "aht21.h"
+#include "ws2812.h"
+#include "batteryLevel.h"
 
 #define IGNORE_UNUSED_VARIABLE(x)     if ( &x == &x ) {}
 
@@ -31,6 +33,7 @@ static eCommandResult_T ConsoleCommand_LED(const char* buffer);
 static eCommandResult_T ConsoleCommand_RAK4270(const char*buffer);
 static eCommandResult_T ConsoleCommand_AHT21(const char*buffer);
 static eCommandResult_T ConsoleCommand_device(const char* buffer);
+
 
 //Command table
 static const sConsoleCommandTable_T mConsoleCommandTable[] =
@@ -170,11 +173,17 @@ static eCommandResult_T ConsoleCommand_AHT21(const char* buffer)
 static eCommandResult_T ConsoleCommand_device(const char* buffer)
 {
 	eCommandResult_T result = COMMAND_SUCCESS;
+	battery_adc_setup();
+	char payload[30];
 
 	ConsoleIoSendString(DEVICE_NAME);
 	ConsoleIoSendString(STR_ENDLINE);
 
 	ConsoleIoSendString(DEVICE_NUM);
+	ConsoleIoSendString(STR_ENDLINE);
+
+	sprintf(payload,"Battery level:%.1fV",battery_reading());
+	ConsoleIoSendString(payload);
 	ConsoleIoSendString(STR_ENDLINE);
 
 	return COMMAND_SUCCESS;

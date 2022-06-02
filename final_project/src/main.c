@@ -12,6 +12,7 @@
 #include "console.h"
 #include "ws2812.pio.h"
 #include "ws2812.h"
+#include "batteryLevel.h"
 
 #include "sm.h"
 
@@ -29,6 +30,7 @@ AHT21 s;	//temp sensor object
 STATE_T state = STATE_POWER_UP;		//state machine start point
 float aht21_temp = 0.0f;		//temperature reading
 float aht21_hum = 0.0f;			//humidity reading
+float battery_voltage = 0.0f;	//battery voltage
 char temp_hum[20];				//data payload
 bool debug_mode = false;
 
@@ -67,6 +69,9 @@ int main()
 	//setup ws2812
 	ws2812_setup();
 
+	//setup adc
+	battery_adc_setup();
+
 	//wait for serial connection 
 	sleep_ms(4000);
 	// //setup rak4270
@@ -90,10 +95,11 @@ int main()
 		{
 			aht21_temp = AHT21_get_temperature(&s);
 			aht21_hum = AHT21_get_humidity(&s);
+			battery_voltage = battery_reading();
 			sprintf(temp_hum,"%.1fC\t%.1f%%\n",aht21_temp,aht21_hum);
 			rak4270_send_cmd_payload(LORA_P2P_SEND,temp_hum);
 
-			printf("%s\n",temp_hum);
+			printf("%s\t%.1fV\n",temp_hum,battery_voltage);
 
 			sleep_ms(2000);
 		}
