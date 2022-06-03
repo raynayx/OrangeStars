@@ -19,6 +19,6 @@ float battery_reading(void)
 {
 	uint adc_raw = adc_read();
 
-	return (adc_raw*ADC_CONVERT);
+	return ((adc_raw*ADC_CONVERT)/ADC_VREF)*100;
 }
 

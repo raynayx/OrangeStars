@@ -38,7 +38,8 @@ pico_enable_stdio_uart(${MY_TARGET} 0)
 
 # Add pico_stdlib library which aggregates commonly used features
 target_link_libraries(${MY_TARGET} pico_stdlib hardware_gpio 
-hardware_uart hardware_adc hardware_i2c hardware_clocks hardware_pio)
+hardware_uart hardware_adc hardware_i2c hardware_clocks hardware_pio 
+hardware_irq)
 
 
 target_include_directories(${MY_TARGET} PUBLIC lib)

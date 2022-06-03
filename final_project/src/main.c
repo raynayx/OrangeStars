@@ -2,6 +2,7 @@
 //pico includes
 #include "stdio.h"
 #include "pico/stdlib.h"
+#include "hardware/irq.h"
 
 
 
@@ -22,7 +23,9 @@ static void uart_setup(void);
 static void button_setup(void);
 static void ws2812_setup(void);
 static void isr(uint gpio,uint32_t events);
+static int64_t button_check(alarm_id_t id,void* user_data);
 
+#define BTN_DEBOUNCE_TIME_US 200
 
 
 
@@ -30,8 +33,8 @@ AHT21 s;	//temp sensor object
 STATE_T state = STATE_POWER_UP;		//state machine start point
 float aht21_temp = 0.0f;		//temperature reading
 float aht21_hum = 0.0f;			//humidity reading
-float battery_voltage = 0.0f;	//battery voltage
-char temp_hum[20];				//data payload
+float battery_level = 0.0f;	//battery voltage
+char payload[30];				//data payload
 bool debug_mode = false;
 
 
@@ -95,11 +98,11 @@ int main()
 		{
 			aht21_temp = AHT21_get_temperature(&s);
 			aht21_hum = AHT21_get_humidity(&s);
-			battery_voltage = battery_reading();
-			sprintf(temp_hum,"%.1fC\t%.1f%%\n",aht21_temp,aht21_hum);
-			rak4270_send_cmd_payload(LORA_P2P_SEND,temp_hum);
+			battery_level = battery_reading();
+			sprintf(payload,"%.1fC\t%.1f%%\t%.1f%%\n",aht21_temp,aht21_hum,battery_level);
+			rak4270_send_cmd_payload(LORA_P2P_SEND,payload);
 
-			printf("%s\t%.1fV\n",temp_hum,battery_voltage);
+			printf("%s",payload);
 
 			sleep_ms(2000);
 		}
@@ -162,9 +165,25 @@ static void isr(uint gpio,uint32_t events)
 	//respond to interrupt from specific pin
 	if(gpio == button)
 	{
-		debug_mode = !debug_mode;
+		
+		//Temporarily disable gpio interrupts
+		irq_set_enabled(IO_IRQ_BANK0,false);
+
+		//timer count down to callback function and check button's current state
+		add_alarm_in_us(BTN_DEBOUNCE_TIME_US,button_check,NULL,false);
 	}
 	
+}
+
+ static int64_t button_check(alarm_id_t id, void *user_data)
+{
+	if(gpio_get(button) == 0)
+	{
+		debug_mode = !debug_mode; 	//toggle DEBUG_MODE
+	}
+	//re-enable gpio interrupts
+	irq_set_enabled(IO_IRQ_BANK0,true);
+	return 0;
 }
 
 

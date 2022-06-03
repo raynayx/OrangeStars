@@ -174,15 +174,9 @@ static eCommandResult_T ConsoleCommand_device(const char* buffer)
 {
 	eCommandResult_T result = COMMAND_SUCCESS;
 	battery_adc_setup();
-	char payload[30];
+	char payload[128];
 
-	ConsoleIoSendString(DEVICE_NAME);
-	ConsoleIoSendString(STR_ENDLINE);
-
-	ConsoleIoSendString(DEVICE_NUM);
-	ConsoleIoSendString(STR_ENDLINE);
-
-	sprintf(payload,"Battery level:%.1fV",battery_reading());
+	sprintf(payload,"Device name: %16s \nDevice Number:%12s \nBattery Level:%11.1f%%\n",DEVICE_NAME,DEVICE_NUM,battery_reading());
 	ConsoleIoSendString(payload);
 	ConsoleIoSendString(STR_ENDLINE);
 
