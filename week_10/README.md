@@ -1,7 +1,7 @@
 # Power Usage
 
-Link to the power [worksheet](https://docs.google.com/spreadsheets/d/1Er3Oey46KhnyobEVthoTjawkp28fJVmcFMQJ445KLT4/edit?usp=sharing).
-
+Link to the power usage [workbook](https://docs.google.com/spreadsheets/d/1Er3Oey46KhnyobEVthoTjawkp28fJVmcFMQJ445KLT4/edit?usp=sharing).
+I used the numbers worksheets mainly.
 
 <!-- ## Design Numbers
 
