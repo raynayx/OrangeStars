@@ -14,6 +14,7 @@
 #include "ws2812.pio.h"
 #include "ws2812.h"
 #include "batteryLevel.h"
+#include "data.h"
 
 #include "sm.h"
 
@@ -31,12 +32,12 @@ static int64_t button_check(alarm_id_t id,void* user_data);
 
 AHT21 s;	//temp sensor object
 STATE_T state = STATE_POWER_UP;		//state machine start point
-float aht21_temp = 0.0f;		//temperature reading
-float aht21_hum = 0.0f;			//humidity reading
 float battery_level = 0.0f;	//battery voltage
 char payload[30];				//data payload
-bool debug_mode = false;
-
+volatile bool debug_mode = false;
+s_data_t aht21_t_h;	//humidity and temperature reading
+s_data_t data_arr[DATA_ARR_LENGTH];
+uint8_t pos = 0;	//position in array to store next reading
 
 #ifdef _BOARDS_SEEED_XIAO_RP2040_H
 
@@ -51,7 +52,6 @@ bool debug_mode = false;
 
 	// #define XIAO_UART_TX 6
 	// #define XIAO_UART_RX 7
-
 #else
 	uint8_t button = 22u; //interrupt button
 #endif	//seeed_xiao_rp2040
@@ -96,10 +96,13 @@ int main()
 	{
 		if(!debug_mode)
 		{
-			aht21_temp = AHT21_get_temperature(&s);
-			aht21_hum = AHT21_get_humidity(&s);
+			aht21_t_h.temperature = AHT21_get_temperature(&s);
+			aht21_t_h.humidity = AHT21_get_humidity(&s);
 			battery_level = battery_reading();
-			sprintf(payload,"%.1fC\t%.1f%%\t%.1f%%\n",aht21_temp,aht21_hum,battery_level);
+
+			data_arr[pos] = aht21_t_h;
+
+			sprintf(payload,"%.1fC\t%.1f%%\t%.1f%%\n",aht21_t_h.temperature,aht21_t_h.humidity,battery_level);
 			rak4270_send_cmd_payload(LORA_P2P_SEND,payload);
 
 			printf("%s",payload);
@@ -111,9 +114,15 @@ int main()
 		{
 			#ifdef _BOARDS_SEEED_XIAO_RP2040_H
 				pattern_sparkle(NUM_PIXEL,0);
-				sleep_ms(60);
+				sleep_ms(20);
 			#endif
 			ConsoleProcess();
+		}
+
+		++pos;	//move to next array postion
+		if(pos > (DATA_ARR_LENGTH - 1))
+		{
+			pos = 0;	//set back to starting point
 		}
 	}
 	return 0;
@@ -141,8 +150,8 @@ static void uart_setup(void)
 {	
 	#ifdef _BOARDS_SEEED_XIAO_RP2040_H
 		uart_init(uart_num,115200);  //init UART 0
-		gpio_set_function(0,GPIO_FUNC_UART); //set GPIO 0 to UART TX
-		gpio_set_function(1,GPIO_FUNC_UART); //set GPIO 1 to UART RX
+		gpio_set_function(0,GPIO_FUNC_UART); //set GPIO 0 to UART TX found on D6
+		gpio_set_function(1,GPIO_FUNC_UART); //set GPIO 1 to UART RX found on D7
 	#else
 		uart_init(uart_num,115200);  //init UART 0
 		gpio_set_function(0,GPIO_FUNC_UART); //set GPIO 0 to UART TX

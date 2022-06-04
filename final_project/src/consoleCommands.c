@@ -19,6 +19,7 @@
 #include "aht21.h"
 #include "ws2812.h"
 #include "batteryLevel.h"
+#include "data.h"
 
 #define IGNORE_UNUSED_VARIABLE(x)     if ( &x == &x ) {}
 
@@ -33,6 +34,7 @@ static eCommandResult_T ConsoleCommand_LED(const char* buffer);
 static eCommandResult_T ConsoleCommand_RAK4270(const char*buffer);
 static eCommandResult_T ConsoleCommand_AHT21(const char*buffer);
 static eCommandResult_T ConsoleCommand_device(const char* buffer);
+static eCommandResult_T ConsoleCommand_dump(const char* buffer);
 
 
 //Command table
@@ -47,6 +49,7 @@ static const sConsoleCommandTable_T mConsoleCommandTable[] =
 	{"aht",&ConsoleCommand_AHT21,HELP("Get readings from AHT21. Eg: aht temp; aht hum")},
 	{"rak",&ConsoleCommand_RAK4270,HELP("Interract with lora xceiver. Eg. ")},
 	{"device",&ConsoleCommand_device,HELP("Get device info.")},
+	{"dump",&ConsoleCommand_dump,HELP("Print the stored data; Eg: dump")},
 
 	CONSOLE_COMMAND_TABLE_END // must be LAST
 };
@@ -181,6 +184,23 @@ static eCommandResult_T ConsoleCommand_device(const char* buffer)
 	ConsoleIoSendString(STR_ENDLINE);
 
 	return COMMAND_SUCCESS;
+}
+
+static eCommandResult_T ConsoleCommand_dump(const char* buffer)
+{
+	eCommandResult_T result = COMMAND_SUCCESS;
+	ConsoleIoSendString("Current data stored:");
+	ConsoleIoSendString(STR_ENDLINE);
+	char data[50];
+	ConsoleIoSendString("Temperature\t\tHumidity");
+	ConsoleIoSendString(STR_ENDLINE);
+	for(int i = 0; i < DATA_ARR_LENGTH; i++)
+	{
+		sprintf(data,"%.1f\t\t%.1f",data_arr[i].temperature,data_arr[i].humidity);
+		ConsoleIoSendString(data);
+		ConsoleIoSendString(STR_ENDLINE);
+	}
+	return result;
 }
 
 static eCommandResult_T ConsoleCommand_RAK4270(const char* buffer)
