@@ -19,6 +19,8 @@
 #define DEV_STATUS "at+get_config=device:status\r\n"
 #define LORA_STATUS "at+get_config=lora:status\r\n"
 #define LORA_TXFER_MODE "at+set_config=lorap2p:transfer_mode:2\r\n"		//set device to send in p2p mode
+#define LORA_SLEEP "at+set_config=device:sleep:1\r\n"
+#define LORA_WAKE "at+set_config=device:sleep:0\r\n"
 #define LORA_P2P_SEND "at+send=lorap2p:"
 #define CR_LF "\r\n"
 
@@ -33,6 +35,11 @@ void rak4270_send_cmd_payload(char* cmd_str,char* payload);
 
 
 void rak4270_get_resp(char * reply_str);
+
+/**
+ * @param sleep_wake: true to sleep; false to wake
+*/
+void rak4270_sleep(bool sleep_wake);
 
 
 #endif

@@ -61,3 +61,17 @@ void rak4270_get_resp(char * reply_str)
 	
 	
 }
+
+
+void rak4270_sleep(bool sleep_wake)
+{
+	if(sleep_wake)
+	{
+		rak4270_send_cmd(LORA_SLEEP);
+	}
+	else
+	{
+		rak4270_send_cmd(LORA_WAKE);
+	}
+	
+}
