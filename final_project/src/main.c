@@ -3,7 +3,7 @@
 #include "stdio.h"
 #include "pico/stdlib.h"
 #include "hardware/irq.h"
-
+#include "hardware/rtc.h"
 
 
 
@@ -14,7 +14,7 @@
 #include "ws2812.pio.h"
 #include "ws2812.h"
 #include "batteryLevel.h"
-#include "data.h"
+#include "circularBuffer.h"
 
 #include "sm.h"
 
@@ -24,10 +24,11 @@ static void uart_setup(void);
 static void button_setup(void);
 static void ws2812_setup(void);
 static void isr(uint gpio,uint32_t events);
-static int64_t button_check(alarm_id_t id,void* user_data);
+static int64_t button_check_cb(alarm_id_t id,void* user_data);
+static int64_t wake_rak4270_cb(alarm_id_t id, void *user_data);
 
 #define BTN_DEBOUNCE_TIME_US 200
-
+#define RAK_SLEEP_MS 60000	//1 minute for test		600000 for field
 
 
 AHT21 s;	//temp sensor object
@@ -35,9 +36,11 @@ STATE_T state = STATE_POWER_UP;		//state machine start point
 float battery_level = 0.0f;	//battery voltage
 char payload[30];				//data payload
 volatile bool debug_mode = false;
+volatile bool rak_awake = true;	//True if RAK4270 is awake False otherwise
 s_data_t aht21_t_h;	//humidity and temperature reading
-s_data_t data_arr[DATA_ARR_LENGTH];
-uint8_t pos = 0;	//position in array to store next reading
+cb_t data_buffer;		// Circular buffer for storing data
+
+
 
 #ifdef _BOARDS_SEEED_XIAO_RP2040_H
 
@@ -90,8 +93,10 @@ int main()
 		sleep_ms(2000);
 	}
 
+	cb_init(&data_buffer);
 	//setup console
 	ConsoleInit();
+
 	while(1)
 	{
 		if(!debug_mode)
@@ -100,10 +105,17 @@ int main()
 			aht21_t_h.humidity = AHT21_get_humidity(&s);
 			battery_level = battery_reading();
 
-			data_arr[pos] = aht21_t_h;
-
+			cb_write(&data_buffer,aht21_t_h);
 			sprintf(payload,"%.1fC\t%.1f%%\t%.1f%%\n",aht21_t_h.temperature,aht21_t_h.humidity,battery_level);
-			rak4270_send_cmd_payload(LORA_P2P_SEND,payload);
+			if(rak_awake)
+			{
+				rak4270_send_cmd_payload(LORA_P2P_SEND,payload);	//send payload
+				sleep_ms(10);
+				rak4270_sleep(true);
+				rak_awake = false;
+				//start wake up alarm
+				add_alarm_in_ms(RAK_SLEEP_MS,wake_rak4270_cb,NULL,false);
+			}
 
 			printf("%s",payload);
 
@@ -119,11 +131,6 @@ int main()
 			ConsoleProcess();
 		}
 
-		++pos;	//move to next array postion
-		if(pos > (DATA_ARR_LENGTH - 1))
-		{
-			pos = 0;	//set back to starting point
-		}
 	}
 	return 0;
 }
@@ -179,12 +186,12 @@ static void isr(uint gpio,uint32_t events)
 		irq_set_enabled(IO_IRQ_BANK0,false);
 
 		//timer count down to callback function and check button's current state
-		add_alarm_in_us(BTN_DEBOUNCE_TIME_US,button_check,NULL,false);
+		add_alarm_in_us(BTN_DEBOUNCE_TIME_US,button_check_cb,NULL,false);
 	}
 	
 }
 
- static int64_t button_check(alarm_id_t id, void *user_data)
+ static int64_t button_check_cb(alarm_id_t id, void *user_data)
 {
 	if(gpio_get(button) == 0)
 	{
@@ -195,6 +202,20 @@ static void isr(uint gpio,uint32_t events)
 	return 0;
 }
 
+static int64_t wake_rak4270_cb(alarm_id_t id, void *user_data)
+{
+	/**
+	 * wake rak4270 from sleep once every 10 minutes
+	 * that is 144 wakes per day
+	*/
+	rak4270_sleep(false);
+	rak_awake = true;
+	// return 1;	// non-zero return from callback repeats alarm! REF: Pico SDK Doc page 249[4.2.14]; 
+	// Haven't gotten it to work that way
+	//Hence, return 0 and calling the add alarm function after sending packets and then putting LoRa to sleep
+	return 0;
+	
+}
 
 static void ws2812_setup(void)
 {

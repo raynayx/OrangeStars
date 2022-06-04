@@ -29,6 +29,8 @@ add_executable(${MY_TARGET}
    src/consoleIo.c
    src/ws2812.c
    src/batteryLevel.c
+   src/xiaoSleep.c
+   src/circularBuffer.c
 )
 
 #Enable printing over USB and disable printing over UART
@@ -39,7 +41,7 @@ pico_enable_stdio_uart(${MY_TARGET} 0)
 # Add pico_stdlib library which aggregates commonly used features
 target_link_libraries(${MY_TARGET} pico_stdlib hardware_gpio 
 hardware_uart hardware_adc hardware_i2c hardware_clocks hardware_pio 
-hardware_irq)
+hardware_irq hardware_rtc)
 
 
 target_include_directories(${MY_TARGET} PUBLIC lib)

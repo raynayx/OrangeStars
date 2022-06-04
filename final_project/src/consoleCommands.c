@@ -19,7 +19,9 @@
 #include "aht21.h"
 #include "ws2812.h"
 #include "batteryLevel.h"
-#include "data.h"
+#include "circularBuffer.h"
+
+extern cb_t data_buffer;		// Circular buffer for storing data
 
 #define IGNORE_UNUSED_VARIABLE(x)     if ( &x == &x ) {}
 
@@ -194,9 +196,11 @@ static eCommandResult_T ConsoleCommand_dump(const char* buffer)
 	char data[50];
 	ConsoleIoSendString("Temperature\t\tHumidity");
 	ConsoleIoSendString(STR_ENDLINE);
-	for(int i = 0; i < DATA_ARR_LENGTH; i++)
+	s_data_t d;
+	while (cb_used(&data_buffer))
 	{
-		sprintf(data,"%.1f\t\t%.1f",data_arr[i].temperature,data_arr[i].humidity);
+		cb_read(&data_buffer,&d); 
+		sprintf(data,"%.1f\t\t%.1f",d.temperature,d.humidity);
 		ConsoleIoSendString(data);
 		ConsoleIoSendString(STR_ENDLINE);
 	}
