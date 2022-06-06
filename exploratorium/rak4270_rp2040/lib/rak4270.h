@@ -5,6 +5,8 @@
 #include "stdio.h"
 #include "hardware/uart.h"
 #include "hardware/gpio.h"
+#include "hardware/dma.h"
+#include "hardware/irq.h"
 
 
 #define DEV_VER "at+version\r\n"
@@ -14,6 +16,8 @@
 #define LORA_P2P_SEND "at+send=lorap2p:"
 #define CR_LF "\r\n"
 
+__attribute__((aligned(2048)))
+extern char response_buffer[2048];
 
 void rak4270_setup(void);
 void rak4270_send_cmd(char* cmd_str);
