@@ -16,7 +16,6 @@
 #define LORA_P2P_SEND "at+send=lorap2p:"
 #define CR_LF "\r\n"
 
-__attribute__((aligned(2048)))
 extern char response_buffer[2048];
 
 void rak4270_setup(void);

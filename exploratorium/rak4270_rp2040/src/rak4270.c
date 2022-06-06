@@ -20,19 +20,21 @@ static void strToHex(char *inStr, char *hexStr)
 
 void dma_handler()
 {
-	dma_channel_start(dma_c);
+	
 	//clear the interrupt
 	dma_hw->ints0 = 1u << dma_c;
+	//restart the transfer on channel
+	dma_channel_start(dma_c);
 }
 
 void setup_dma()
 {
 	dma_c = dma_claim_unused_channel(true);
-	//16 bit transfers both read and write increment after each transfer
+	//8-bit transfers both read and write increment after each transfer
 	// pointing to src and dest respectively
 	//select DREQ_UART0_RX
 	dma_channel_config dma_c_config = dma_channel_get_default_config(dma_c);
-	channel_config_set_transfer_data_size(&dma_c_config,DMA_SIZE_16);
+	channel_config_set_transfer_data_size(&dma_c_config,DMA_SIZE_8);		//16 bits per transfer inserts too many NULL(\000)s in the buffer
 	channel_config_set_dreq(&dma_c_config,DREQ_UART0_RX);
 	channel_config_set_write_increment(&dma_c_config,true);
 	channel_config_set_read_increment(&dma_c_config,false);
@@ -40,10 +42,10 @@ void setup_dma()
 	dma_channel_configure(
 		dma_c,
 		&dma_c_config,
-		&response_buffer,
+		&response_buffer,	//write buffer
 		&uart0_hw->dr,		//Initial read address (FIFO in this case)
-		UINT16_MAX,			//number of transfer 2 bytes each time
-		true					//do not start immediately
+		UINT16_MAX,			//number of transfer (2 bytes each time)
+		true					//start immediately
 	);
 	dma_channel_set_irq0_enabled(dma_c,true);
 	irq_set_exclusive_handler(DMA_IRQ_0,dma_handler);
