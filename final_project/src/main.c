@@ -40,7 +40,7 @@ volatile bool rak_awake = true;	//True if RAK4270 is awake False otherwise
 s_data_t aht21_t_h;	//humidity and temperature reading
 cb_t data_buffer;		// Circular buffer for storing data
 
-
+char response_buffer[2048];
 
 #ifdef _BOARDS_SEEED_XIAO_RP2040_H
 

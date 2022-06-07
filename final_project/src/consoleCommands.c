@@ -49,7 +49,7 @@ static const sConsoleCommandTable_T mConsoleCommandTable[] =
     {"u16h", &ConsoleCommandParamExampleHexUint16, HELP("How to get a hex u16 from the params list: u16h aB12")},
 	{"led",&ConsoleCommand_LED,HELP("Turn on board LED on or off. Eg: led on")},
 	{"aht",&ConsoleCommand_AHT21,HELP("Get readings from AHT21. Eg: aht temp; aht hum")},
-	{"rak",&ConsoleCommand_RAK4270,HELP("Interract with lora xceiver. Eg. ")},
+	{"rak",&ConsoleCommand_RAK4270,HELP("Interract with lora xceiver. Eg: rak at+help")},
 	{"device",&ConsoleCommand_device,HELP("Get device info.")},
 	{"dump",&ConsoleCommand_dump,HELP("Print the stored data; Eg: dump")},
 
@@ -162,7 +162,7 @@ static eCommandResult_T ConsoleCommand_AHT21(const char* buffer)
 			reading = AHT21_get_temperature(&s);
 			sprintf(payload,"%.1fC",reading);
 		}
-		else if(result == COMMAND_SUCCESS)
+		else if(strcmp("hum",param) == 0)
 		{
 			reading = AHT21_get_humidity(&s);
 			sprintf(payload,"%.1f%%",reading);
@@ -172,7 +172,29 @@ static eCommandResult_T ConsoleCommand_AHT21(const char* buffer)
 	ConsoleIoSendString(payload);
 	ConsoleIoSendString(STR_ENDLINE);
 
-	return COMMAND_SUCCESS;
+	return result;
+}
+
+static eCommandResult_T ConsoleCommand_RAK4270(const char*buffer)
+{
+	eCommandResult_T result = COMMAND_ERROR;
+	char param[256];
+	result = ConsoleReceiveParamString(buffer,1,param);
+	bool print_response = false;
+
+	if(result == COMMAND_SUCCESS)
+	{
+		strcat(param,STR_ENDLINE);
+		rak4270_send_cmd(param);
+		rak4270_send_cmd(STR_ENDLINE);
+		ConsoleIoSendString(response_buffer);
+		ConsoleIoSendString(STR_ENDLINE);
+	}
+
+		// strcpy(response_buffer,"");
+	
+
+	return result;
 }
 
 static eCommandResult_T ConsoleCommand_device(const char* buffer)
@@ -207,10 +229,6 @@ static eCommandResult_T ConsoleCommand_dump(const char* buffer)
 	return result;
 }
 
-static eCommandResult_T ConsoleCommand_RAK4270(const char* buffer)
-{
-	return COMMAND_SUCCESS;
-}
 const sConsoleCommandTable_T* ConsoleCommandsGetTable(void)
 {
 	return (mConsoleCommandTable);

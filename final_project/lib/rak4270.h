@@ -11,6 +11,8 @@
 #include "stdio.h"
 #include "hardware/uart.h"
 #include "hardware/gpio.h"
+#include "hardware/dma.h"
+#include "hardware/irq.h"
 
 #define uart_num uart0
 
@@ -24,6 +26,7 @@
 #define LORA_P2P_SEND "at+send=lorap2p:"
 #define CR_LF "\r\n"
 
+extern char response_buffer[2048];
 
 bool rak4270_init(void);
 void rak4270_send_cmd(char* cmd_str);

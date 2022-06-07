@@ -15,7 +15,7 @@ uint16_t cb_init(cb_t *cb)
 
 /**
 * @return used space; 0 for empty, (size - 1) for full
- * MES page 179
+* MES page 179
 */
 uint16_t cb_used(cb_t *cb)
 {

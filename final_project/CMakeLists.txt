@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.13)
 # initialize the SDK based on PICO_SDK_PATH
 # note: this must happen before project()
 set(PICO_SDK_PATH ~/opt/pico-sdk)
-set(PICO_BOARD seeed_xiao_rp2040)
+# set(PICO_BOARD seeed_xiao_rp2040)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build)
@@ -41,7 +41,7 @@ pico_enable_stdio_uart(${MY_TARGET} 0)
 # Add pico_stdlib library which aggregates commonly used features
 target_link_libraries(${MY_TARGET} pico_stdlib hardware_gpio 
 hardware_uart hardware_adc hardware_i2c hardware_clocks hardware_pio 
-hardware_irq hardware_rtc)
+hardware_irq hardware_rtc hardware_dma)
 
 
 target_include_directories(${MY_TARGET} PUBLIC lib)
