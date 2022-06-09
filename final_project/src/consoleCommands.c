@@ -186,14 +186,10 @@ static eCommandResult_T ConsoleCommand_RAK4270(const char*buffer)
 	{
 		strcat(param,STR_ENDLINE);
 		rak4270_send_cmd(param);
-		rak4270_send_cmd(STR_ENDLINE);
+		sleep_ms(200);		//wait a bit for data to be moved?
 		ConsoleIoSendString(response_buffer);
 		ConsoleIoSendString(STR_ENDLINE);
 	}
-
-		// strcpy(response_buffer,"");
-	
-
 	return result;
 }
 

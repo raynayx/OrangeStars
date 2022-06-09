@@ -51,7 +51,7 @@ void pattern_sparkle(uint len, uint t) {
         return;
     for (int i = 0; i < len; ++i)
         // put_pixel(rand() % 16 ? 0 : 0xffffffff);
-        put_pixel(rand()%16 ? 0 : 0xf00fa080);
+        put_pixel(rand()%16 ? 0 : 0xC0DEDEDE44 );
 }
 
 void pattern_greys(uint len, uint t) {

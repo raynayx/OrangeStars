@@ -107,26 +107,28 @@ int main()
 
 			cb_write(&data_buffer,aht21_t_h);
 			sprintf(payload,"%.1fC\t%.1f%%\t%.1f%%\n",aht21_t_h.temperature,aht21_t_h.humidity,battery_level);
-			if(rak_awake)
-			{
+			// if(rak_awake)
+			// {
 				rak4270_send_cmd_payload(LORA_P2P_SEND,payload);	//send payload
-				sleep_ms(10);
-				rak4270_sleep(true);
-				rak_awake = false;
+				sleep_ms(5);
+				// rak4270_sleep(true);
+				// rak_awake = false;
 				//start wake up alarm
-				add_alarm_in_ms(RAK_SLEEP_MS,wake_rak4270_cb,NULL,false);
-			}
+			// 	add_alarm_in_ms(RAK_SLEEP_MS,wake_rak4270_cb,NULL,false);
+			// }
 
 			printf("%s",payload);
 
-			sleep_ms(2000);
+			// sleep_ms(2000);
 		}
 
 		if(debug_mode)
 		{
 			#ifdef _BOARDS_SEEED_XIAO_RP2040_H
 				pattern_sparkle(NUM_PIXEL,0);
-				sleep_ms(20);
+				sleep_ms(5);
+				pattern_random(NUM_PIXEL,0);
+				sleep_ms(5);
 			#endif
 			ConsoleProcess();
 		}

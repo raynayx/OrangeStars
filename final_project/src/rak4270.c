@@ -2,7 +2,8 @@
 #include "string.h"
 
 //get free DMA channel
-int dma_c;
+int dma_c_data;
+int dma_c_ctrl;
 
 //Convert a string to hex characters
 static void strToHex(char *inStr, char *hexStr)
@@ -23,35 +24,32 @@ static void dma_handler()
 {
 	
 	//clear the interrupt
-	dma_hw->ints0 = 1u << dma_c;
-	dma_channel_set_write_addr(dma_c,response_buffer,true);
+	dma_hw->ints0 = 1u << dma_c_data;
 	//restart the transfer on channel
 	// dma_channel_start(dma_c);
 }
 
 void setup_dma()
 {
-	dma_c = dma_claim_unused_channel(true);
+	dma_c_data = dma_claim_unused_channel(true);
 	//8-bit transfers with write increment after each transfer
 	
 	// pointing to source and destination respectively
-	dma_channel_config dma_c_config = dma_channel_get_default_config(dma_c);
+	dma_channel_config dma_c_config = dma_channel_get_default_config(dma_c_data);
 	channel_config_set_transfer_data_size(&dma_c_config,DMA_SIZE_8);	//16 bits per transfer inserts too many NULL(\000)s in the buffer
 	channel_config_set_dreq(&dma_c_config,DREQ_UART0_RX);	//select DREQ_UART0_RX to get signal from  UART to pace transfers
 	channel_config_set_write_increment(&dma_c_config,true);
 	channel_config_set_read_increment(&dma_c_config,false);//No read increment since the UART data register is the same address
-	// channel_config_set_ring(&dma_c_config,true,11);
-	
-
+	channel_config_set_ring(&dma_c_config,true,11);
 	dma_channel_configure(
-		dma_c,
+		dma_c_data,
 		&dma_c_config,
-		&response_buffer,	//write buffer
+		response_buffer,	//write buffer
 		&uart0_hw->dr,		//Initial read address (UART in this case)
 		2048,			//number of transfer
 		true				//start immediately
 	);
-	dma_channel_set_irq0_enabled(dma_c,true);
+	dma_channel_set_irq0_enabled(dma_c_data,true);
 	irq_set_exclusive_handler(DMA_IRQ_0,dma_handler);
 	irq_set_enabled(DMA_IRQ_0,true);
 }
@@ -102,7 +100,6 @@ void rak4270_get_resp(char * reply_str)
 	
 	
 }
-
 
 void rak4270_sleep(bool sleep_wake)
 {
