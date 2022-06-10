@@ -26,10 +26,14 @@ static void ws2812_setup(void);
 static void isr(uint gpio,uint32_t events);
 static int64_t button_check_cb(alarm_id_t id,void* user_data);
 static int64_t wake_rak4270_cb(alarm_id_t id, void *user_data);
+static bool possible_fire(s_data_t d);
+
+
 
 #define BTN_DEBOUNCE_TIME_US 200
 #define RAK_SLEEP_MS 60000	//1 minute for test		600000 for field
-
+#define THRESH_TEMP 31
+#define THRESH_HUM	49
 
 AHT21 s;	//temp sensor object
 STATE_T state = STATE_POWER_UP;		//state machine start point
@@ -39,6 +43,7 @@ volatile bool debug_mode = false;
 volatile bool rak_awake = true;	//True if RAK4270 is awake False otherwise
 s_data_t aht21_t_h;	//humidity and temperature reading
 cb_t data_buffer;		// Circular buffer for storing data
+bool fire_status;		//possibility of fire
 
 char response_buffer[2048];
 
@@ -104,9 +109,9 @@ int main()
 			aht21_t_h.temperature = AHT21_get_temperature(&s);
 			aht21_t_h.humidity = AHT21_get_humidity(&s);
 			battery_level = battery_reading();
-
+			fire_status = possible_fire(aht21_t_h);
 			cb_write(&data_buffer,aht21_t_h);
-			sprintf(payload,"%.1fC\t%.1f%%\t%.1f%%\n",aht21_t_h.temperature,aht21_t_h.humidity,battery_level);
+			sprintf(payload,"%.1fC\t%.1f%%\t%.1f%%\t%1d\n",aht21_t_h.temperature,aht21_t_h.humidity,battery_level,fire_status?1:0);
 			// if(rak_awake)
 			// {
 				rak4270_send_cmd_payload(LORA_P2P_SEND,payload);	//send payload
@@ -229,4 +234,14 @@ static void ws2812_setup(void)
 		ws2812_program_init(pio,sm,offset,WS2812_PIN,800000,IS_RGBW);
 	#endif
 
+}
+
+static bool possible_fire(s_data_t d)
+{
+	bool status = false;
+	if(d.temperature >= THRESH_TEMP && d.humidity <= THRESH_HUM)
+	{
+		status = true;
+	}
+	return status;
 }
