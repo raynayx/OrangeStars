@@ -81,19 +81,38 @@ button {
     margin-left: 40px;
     padding: 10px;
     font-size: large;
+    color: chartreuse;
 
 }
 
-#display {
+#titlehead {
+    margin-left: 40px;
+}
+
+#res_display {
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-    white-space: pre;
     position: relative;
     height: calc(35% - 40px);
     width: calc(93% - 20px);
     border-style: solid;
     overflow-y: auto;
-    background-color: rgba(200, 148, 224, 0.075);
+    background-color: rgba(170, 114, 194, 0.137);
     margin-left: 40px;
     padding: 10px;
     font-size: large;
+    color: white;
+}
+
+.material-icons {
+    color: rgb(233, 236, 31);
+}
+
+
+.material-symbols-outlined {
+  font-variation-settings:
+  'FILL' 0,
+  'wght' 400,
+  'GRAD' 0,
+  'opsz' 48;
+  color: aqua;
 }

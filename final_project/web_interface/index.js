@@ -14,6 +14,9 @@ let p_response = "";
 
 
 let display = document.getElementById("display");
+let temp = document.getElementById("temp");
+let hum = document.getElementById("hum");
+let bat = document.getElementById("bat");
 
   async function connectSerial() {
       try {
@@ -83,11 +86,16 @@ let display = document.getElementById("display");
         response.trim();
         
         // console.log(response,response.length);
-        if(response.length >= 52 && response.endsWith("A"))
+        if(response.length >= 40 && response.endsWith("A"))
       {
           let ar = [...response.matchAll(regex)];
-          console.log(hex2a(ar[0][5]));
-          display.innerHTML = `${hex2a(ar[0][5])}`;
+          // console.log(hex2a(ar[0][5]));
+          console.log(ar);
+         let txt = hex2a(ar[0][5]).split("\t");
+            temp.innerHTML = txt[0];
+            hum.innerHTML = txt[1];
+            bat.innerHTML = txt[2];
+          // display.innerHTML = `${hex2a(ar[0][5])}`;
         p_response = "";
       }
       else {
@@ -95,13 +103,18 @@ let display = document.getElementById("display");
           p_response = response.split('\\')[0];
           p_response.trim();
           
-        //   console.log(p_response,p_response.length);
-          if(p_response.length >=52)
+          // console.log(p_response,p_response.length);
+          if(p_response.length >=40)
           {
 
              let ar = [...p_response.matchAll(regex)];
-            console.log(hex2a(ar[0][5]));
-            display.innerHTML = `${hex2a(ar[0][5])}`;
+            // console.log(hex2a(ar[0][5]));
+            console.log(ar);
+            let txt = hex2a(ar[0][5]).split("\t");
+            temp.innerHTML = txt[0];
+            hum.innerHTML = txt[1];
+            bat.innerHTML = txt[2];
+          // display.innerHTML = `${hex2a(ar[0][5])}`;
             p_response = "";
           }
       }
