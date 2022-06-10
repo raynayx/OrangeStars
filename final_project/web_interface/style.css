@@ -1,0 +1,99 @@
+* {
+    background-color: rgb(49, 49, 49);
+    font-family: Verdana, sans-serif;
+    color: whitesmoke;
+    border-radius: 10px;
+    padding: 0px;
+    margin: 0px;
+}
+
+button {
+    background-color: dimgray; 
+}
+
+.controls {
+    position: absolute;
+    width: 97%;
+    height: 5%;
+    bottom: 7px;
+    right: 0px;
+    border: 5px;
+    transition-duration: 2s;
+}
+#cmdButton {
+    width: 12%;
+    height: 100%;
+    font-size: large;
+    margin-right: 10px;
+    transform: translate(-5px);
+    cursor: pointer;
+}
+
+#cmdButton:hover {
+    color: chartreuse;
+}
+
+#clearButton {
+    position: absolute;
+    width: 12%;
+    height: 100%;
+    font-size: large;
+    cursor: pointer;
+}
+
+#clearButton:hover {
+    color: mediumturquoise;
+}
+
+
+#cmdLine {
+    width: 70%;
+    font-size: large;
+    height: 80%;
+    transform: translate(0, -1px);
+    color: whitesmoke;
+    background-color: dimgrey;
+    text-align: right;
+    padding-right: 10px;
+    margin-right: 20px;
+}
+
+#cmdLine:hover {
+    background-color: grey;
+    
+}
+::placeholder {
+    color: whitesmoke;
+}
+
+
+#serialResults {
+    /* display: none; */
+    font-family: monospace;
+    white-space: pre;
+    top:60%;
+    position: absolute;
+    height: calc(35% - 40px);
+    width: calc(93% - 20px);
+    border-style: solid;
+    overflow-y: auto;
+    background-color: rgb(88, 92, 92);
+    margin-left: 40px;
+    padding: 10px;
+    font-size: large;
+
+}
+
+#display {
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    white-space: pre;
+    position: relative;
+    height: calc(35% - 40px);
+    width: calc(93% - 20px);
+    border-style: solid;
+    overflow-y: auto;
+    background-color: rgba(200, 148, 224, 0.075);
+    margin-left: 40px;
+    padding: 10px;
+    font-size: large;
+}
