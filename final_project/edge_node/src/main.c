@@ -127,8 +127,6 @@ int main()
 			#ifdef _BOARDS_SEEED_XIAO_RP2040_H
 				pattern_sparkle(NUM_PIXEL,0);
 				sleep_ms(5);
-				pattern_random(NUM_PIXEL,0);
-				sleep_ms(5);
 			#endif
 			ConsoleProcess();
 		}
