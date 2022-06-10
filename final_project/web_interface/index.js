@@ -8,7 +8,7 @@ if ("serial" in navigator) {
 
 let port, textEncoder, writableStreamClosed, writer;
 let connectedFlag = false;
-const regex =/(at\+recv=)(-?[0-9]+),(-?[0-9]+),([0-9]+):([a-zA-z0-9]*250A)/g;
+const regex =/(at\+recv=)(-?[0-9]+),(-?[0-9]+),([0-9]+):([a-zA-z0-9]*A)/g;
 let response = "";
 let p_response = "";
 
@@ -19,6 +19,7 @@ let hum = document.getElementById("hum");
 let bat = document.getElementById("bat");
 let rssi = document.getElementById("rssi");
 let snr = document.getElementById("snr");
+let fire_status = document.getElementById("fire_stat");
 
   async function connectSerial() {
       try {
@@ -93,12 +94,21 @@ let snr = document.getElementById("snr");
           let ar = [...response.matchAll(regex)];
           // console.log(hex2a(ar[0][5]));
           console.log(ar);
-         let txt = hex2a(ar[0][5]).split("\t");
+         let txt = hex2a(ar[0][5]).trim().split("\t");
             temp.innerHTML = txt[0];
             hum.innerHTML = txt[1];
             bat.innerHTML = txt[2];
-            rssi.innerHTML = `${ar[0][2]}`;
-            snr.innerHTML = `${ar[0][3]}`;
+            rssi.innerHTML = `${ar[0][2]}dBm`;
+            snr.innerHTML = `${ar[0][3]}dB`;
+            if(txt[3]=='1')
+            {
+               fire_status.innerHTML = "fire";
+            }
+            else if(txt[3] == '0')
+            {
+              fire_status.innerHTML = "no fire";
+            }
+           
           // display.innerHTML = `${hex2a(ar[0][5])}`;
         p_response = "";
       }
@@ -114,12 +124,23 @@ let snr = document.getElementById("snr");
              let ar = [...p_response.matchAll(regex)];
             // console.log(hex2a(ar[0][5]));
             console.log(ar);
-            let txt = hex2a(ar[0][5]).split("\t");
+            let txt = hex2a(ar[0][5]).trim().split("\t");
+            console.log(txt);
             temp.innerHTML = txt[0];
             hum.innerHTML = txt[1];
             bat.innerHTML = txt[2];
             rssi.innerHTML = `${ar[0][2]}dBm`;
             snr.innerHTML = `${ar[0][3]}dB`;
+            if(txt[3]=='1')
+            {
+               fire_status.innerHTML = "fire";
+            }
+            else if( txt[3]== '0')
+            {
+              fire_status.innerHTML = "no fire";
+            }
+
+           
           // display.innerHTML = `${hex2a(ar[0][5])}`;
             p_response = "";
           }

@@ -103,12 +103,13 @@ button {
     color: white;
 }
 
+
 .material-icons {
     color: rgb(233, 236, 31);
     background-color: rgba(170, 114, 194, 0.137);
 }
 
-#temp,#hum,#bat,#rssi,#snr{
+#temp,#hum,#bat,#rssi,#snr,#fire_stat{
     font-size: x-large;
     background-color: rgba(170, 114, 194, 0.137);
 }
@@ -122,4 +123,7 @@ button {
   'opsz' 48;
   color: aqua;
   background-color: rgba(170, 114, 194, 0.137);
+}
+#fire_icon {
+    color: crimson;
 }
