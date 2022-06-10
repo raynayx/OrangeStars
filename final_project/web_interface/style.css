@@ -35,7 +35,7 @@ button {
 
 #clearButton {
     position: absolute;
-    width: 12%;
+    width: 10%;
     height: 100%;
     font-size: large;
     cursor: pointer;
@@ -54,8 +54,8 @@ button {
     color: whitesmoke;
     background-color: dimgrey;
     text-align: right;
-    padding-right: 10px;
-    margin-right: 20px;
+    padding-right: 20px;
+    margin-right: 10px;
 }
 
 #cmdLine:hover {
@@ -105,6 +105,10 @@ button {
 
 .material-icons {
     color: rgb(233, 236, 31);
+}
+
+#temp,#hum,#bat{
+    font-size: x-large;
 }
 
 
