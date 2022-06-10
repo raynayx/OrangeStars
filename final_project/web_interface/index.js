@@ -17,6 +17,8 @@ let display = document.getElementById("display");
 let temp = document.getElementById("temp");
 let hum = document.getElementById("hum");
 let bat = document.getElementById("bat");
+let rssi = document.getElementById("rssi");
+let snr = document.getElementById("snr");
 
   async function connectSerial() {
       try {
@@ -95,6 +97,8 @@ let bat = document.getElementById("bat");
             temp.innerHTML = txt[0];
             hum.innerHTML = txt[1];
             bat.innerHTML = txt[2];
+            rssi.innerHTML = `${ar[0][2]}`;
+            snr.innerHTML = `${ar[0][3]}`;
           // display.innerHTML = `${hex2a(ar[0][5])}`;
         p_response = "";
       }
@@ -114,6 +118,8 @@ let bat = document.getElementById("bat");
             temp.innerHTML = txt[0];
             hum.innerHTML = txt[1];
             bat.innerHTML = txt[2];
+            rssi.innerHTML = `${ar[0][2]}dBm`;
+            snr.innerHTML = `${ar[0][3]}dB`;
           // display.innerHTML = `${hex2a(ar[0][5])}`;
             p_response = "";
           }

@@ -105,10 +105,12 @@ button {
 
 .material-icons {
     color: rgb(233, 236, 31);
+    background-color: rgba(170, 114, 194, 0.137);
 }
 
-#temp,#hum,#bat{
+#temp,#hum,#bat,#rssi,#snr{
     font-size: x-large;
+    background-color: rgba(170, 114, 194, 0.137);
 }
 
 
@@ -119,4 +121,5 @@ button {
   'GRAD' 0,
   'opsz' 48;
   color: aqua;
+  background-color: rgba(170, 114, 194, 0.137);
 }
