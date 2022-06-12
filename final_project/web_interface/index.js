@@ -32,11 +32,10 @@ let fire_status = document.getElementById("fire_stat");
           writableStreamClosed = textEncoder.readable.pipeTo(port.writable);
 
           writer = textEncoder.writable.getWriter();
+          connected();
       } catch {
           alert("Serial Connection Failed");
       }
-
-      connected();
   }
 
   function connected() {
